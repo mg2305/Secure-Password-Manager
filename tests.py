@@ -84,6 +84,11 @@ def fixed_create_tables():
     conn.commit()
     conn.close()
 
+# Ensure tables exist from the start
+if os.path.exists(TEST_DB_NAME):
+    os.remove(TEST_DB_NAME)
+fixed_create_tables()
+
 # Replace the original function with our fixed version
 # This is done before the tests run
 create_tables = fixed_create_tables
@@ -99,8 +104,8 @@ class TestDatabaseFunctions(unittest.TestCase):
         # Reset mock objects
         mock_messagebox.showinfo.reset_mock()
         mock_messagebox.showerror.reset_mock()
-        # Create tables
-        create_tables()
+        # Create tables - explicitly call our fixed version
+        fixed_create_tables()
         # Create a connection to keep track of
         self.conn = sqlite3.connect(TEST_DB_NAME)
     
@@ -115,7 +120,7 @@ class TestDatabaseFunctions(unittest.TestCase):
     def test_create_tables(self):
         """Test if tables are created properly"""
         # Force table creation
-        create_tables()
+        fixed_create_tables()
         
         cursor = self.conn.cursor()
         
@@ -221,7 +226,8 @@ class TestEncryptionFunctions(unittest.TestCase):
         # Create a temporary database for testing
         if os.path.exists(TEST_DB_NAME):
             os.remove(TEST_DB_NAME)
-        create_tables()
+        # Explicitly call our fixed version
+        fixed_create_tables()
         
         # Create a connection to keep track of
         self.conn = sqlite3.connect(TEST_DB_NAME)
@@ -439,7 +445,8 @@ class TestIntegrationTests(unittest.TestCase):
         # Create a temporary database for testing
         if os.path.exists(TEST_DB_NAME):
             os.remove(TEST_DB_NAME)
-        create_tables()
+        # Explicitly call our fixed version
+        fixed_create_tables()
         
         # Create a connection to keep track of
         self.conn = sqlite3.connect(TEST_DB_NAME)
