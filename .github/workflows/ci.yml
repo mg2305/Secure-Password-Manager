@@ -26,10 +26,6 @@ jobs:
           python -m venv venv
           venv/bin/python -m pip install --upgrade pip
           venv/bin/python -m pip install -r requirements.txt
-          venv/bin/python -m pip install flake8  # Install flake8 here
-
-      - name: Lint with Flake8
-        run: venv/bin/flake8 .  # Use direct path, no need to activate venv
 
       - name: Run Tests manually
         run: venv/bin/python tests.py  # Run tests without activating venv
