@@ -34,16 +34,8 @@ sys.modules['PIL.ImageTk'] = mock_pilimagetk
 sys.modules['tkmacosx'] = mock_tkmacosx
 sys.modules['pyperclip'] = mock_pyperclip
 
-# Import the modules after mocking
-from database import *
-from encryption import *
-from utils import *
-
 # Create a test database name
 TEST_DB_NAME = 'test_gui_spm.db'
-
-# Override the DB_NAME in database module
-DB_NAME = TEST_DB_NAME
 
 # PATCH 1: Fix create_tables function (monkeypatch)
 def fixed_create_tables():
@@ -84,14 +76,24 @@ def fixed_create_tables():
     conn.commit()
     conn.close()
 
+# Import the modules after mocking
+from database import *
+import database
+
+# Override the DB_NAME in database module
+DB_NAME = TEST_DB_NAME
+database.DB_NAME = TEST_DB_NAME
+
+# Apply the monkey patch to the database module
+database.create_tables = fixed_create_tables
+
 # Ensure tables exist from the start
 if os.path.exists(TEST_DB_NAME):
     os.remove(TEST_DB_NAME)
 fixed_create_tables()
 
-# Replace the original function with our fixed version
-# This is done before the tests run
-create_tables = fixed_create_tables
+from encryption import *
+from utils import *
 
 class TestDatabaseFunctions(unittest.TestCase):
     """Test cases for database.py functions"""
@@ -142,6 +144,9 @@ class TestDatabaseFunctions(unittest.TestCase):
     
     def test_vault_metadata_operations(self):
         """Test vault metadata operations"""
+        # Create tables first
+        fixed_create_tables()
+        
         # Default should be vault doesn't exist
         self.assertFalse(get_VAULT_EXISTS())
         
@@ -157,6 +162,9 @@ class TestDatabaseFunctions(unittest.TestCase):
     
     def test_password_operations(self):
         """Test password storage operations"""
+        # Create tables first
+        fixed_create_tables()
+        
         # Initially no website should exist
         self.assertFalse(websitePassword_exists("test_site"))
         
@@ -183,6 +191,9 @@ class TestDatabaseFunctions(unittest.TestCase):
     
     def test_failed_login_tracking(self):
         """Test failed login tracking"""
+        # Create tables first
+        fixed_create_tables()
+        
         # Get initial time
         initial_time = get_LAST_FAILED()
         
@@ -196,6 +207,9 @@ class TestDatabaseFunctions(unittest.TestCase):
 
     def test_delete_tables(self):
         """Test if tables are properly reset"""
+        # Create tables first
+        fixed_create_tables()
+        
         # Insert some test data
         fill_VAULT_METADATA(True, "test_hash", b"test_token")
         
@@ -245,6 +259,9 @@ class TestEncryptionFunctions(unittest.TestCase):
     
     def test_password_hashing(self):
         """Test password hashing and verification"""
+        # Create tables first
+        fixed_create_tables()
+        
         # Hash a password
         hashed_password = hash_mp(self.test_password)
         
@@ -292,6 +309,9 @@ class TestEncryptionFunctions(unittest.TestCase):
     
     def test_keyfile_verification(self):
         """Test keyfile verification"""
+        # Create tables first
+        fixed_create_tables()
+        
         # Generate keyfile
         gen_keyfile(self.test_keyfile)
         
@@ -464,6 +484,9 @@ class TestIntegrationTests(unittest.TestCase):
     
     def test_sign_up_flow(self):
         """Test the sign up flow"""
+        # Create tables first
+        fixed_create_tables()
+        
         # Hash master password
         hashed_mp = hash_mp(self.test_password)
         
@@ -484,6 +507,9 @@ class TestIntegrationTests(unittest.TestCase):
     
     def test_login_flow(self):
         """Test the login flow"""
+        # Create tables first
+        fixed_create_tables()
+        
         # First sign up
         hashed_mp = hash_mp(self.test_password)
         self.assertTrue(gen_keyfile(self.test_keyfile))
@@ -501,6 +527,9 @@ class TestIntegrationTests(unittest.TestCase):
     
     def test_password_storage_flow(self):
         """Test the password storage and retrieval flow"""
+        # Create tables first
+        fixed_create_tables()
+        
         # First sign up and login to get the key
         hashed_mp = hash_mp(self.test_password)
         self.assertTrue(gen_keyfile(self.test_keyfile))
