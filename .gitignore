@@ -1,0 +1,29 @@
+# Ignore Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore virtual environment (if named 'venv' or 'SPM')
+venv/
+SPM/
+
+# Ignore database file
+gui_spm.db
+
+# Ignore OS-specific files
+.DS_Store
+
+# Ignore IDE and editor settings
+.vscode/
+.idea/
+*.swp
+*~
+
+# Ignore system logs and temp files
+*.log
+
+# Ignore images and icons (since they are not needed in Git)
+icon.icns
+logo.png
+
+
