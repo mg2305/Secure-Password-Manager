@@ -17,7 +17,7 @@ def on_closing(vault_window):
     handle_vault_action(5)
 
 #=============== AutoLogout System ===============#
-INACTIVITY_TIMEOUT = 30  # Time (in seconds) before auto-logout triggers
+INACTIVITY_TIMEOUT = 300  # Time (in seconds) before auto-logout triggers
 last_activity_time = time.time()  # Track last activity time
 logout_active = False  # Controls if auto-logout thread runs
 force_logout = False  # Tracks if logout was forced due to inactivity

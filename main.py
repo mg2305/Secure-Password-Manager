@@ -21,7 +21,7 @@ else:
 
 
 # Define constants for lockout time, max attempts, and token for vault verification
-LOCKOUT_TIME = 30
+LOCKOUT_TIME = 300
 MAX_ATTEMPTS = 5
 TOKEN = "MAYANK'S SPM"
 keyfile_path = "~/.secure_pm/keyfile.key"
