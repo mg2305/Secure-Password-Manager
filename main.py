@@ -24,7 +24,7 @@ else:
 LOCKOUT_TIME = 300
 MAX_ATTEMPTS = 5
 TOKEN = "MAYANK'S SPM"
-keyfile_path = "~/.secure_pm/keyfile.key"
+keyfile_path = os.path.expanduser("~/.secure_pm/keyfile.key")
 
 
 # === X Button Override Function ===
