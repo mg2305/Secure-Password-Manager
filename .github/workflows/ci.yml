@@ -28,6 +28,6 @@ jobs:
           venv/bin/python -m pip install -r requirements.txt
 
       - name: Run Tests manually
-        run: venv/bin/python tests.py  # Run tests without activating venv
+        run: venv/bin/python tests.py  
 
   
