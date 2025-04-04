@@ -49,20 +49,27 @@ jobs:
           venv/bin/python -m pip install --upgrade pip
           venv/bin/python -m pip install -r requirements.txt
 
-      - name: Install Platypus
+      - name: Install and Locate Platypus
         run: |
           brew update
           brew install --cask platypus
-          # Debug information
-          ls -la /Applications/Platypus.app/Contents/Resources/
+          # Install command-line tool
+          sudo /Applications/Platypus.app/Contents/Resources/Scripts/platypus_install_cli.sh
+          # Debug - locate the CLI tool
+          find /Applications/Platypus.app -name platypus* -type f
+          echo "PATH: $PATH"
+          # Verify installation
+          which platypus || echo "platypus command not found in PATH"
           
       - name: Create Build Directory
         run: mkdir -p build
         
       - name: Build macOS Application
         run: |
-          # Use direct path to the Platypus command-line tool
-          /Applications/Platypus.app/Contents/Resources/platypus_clt -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3" -B "main.py" "build/SecurePasswordManager.app"
+          # Use the platypus CLI tool - should be in PATH after installation script
+          platypus -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3" -B "main.py" "build/SecurePasswordManager.app" || \
+          # Fallback to direct path if found by our search
+          $(find /Applications/Platypus.app -name "platypus" -type f | head -n 1) -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3" -B "main.py" "build/SecurePasswordManager.app"
 
       - name: Package as DMG
         run: |
