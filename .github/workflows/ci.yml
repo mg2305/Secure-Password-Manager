@@ -31,7 +31,7 @@ jobs:
         run: venv/bin/python tests.py  # Run tests without activating venv
 
   deploy:
-    needs: build  # Runs only after build & tests pass
+    needs: build
     runs-on: macos-latest
 
     steps:
@@ -49,9 +49,12 @@ jobs:
           venv/bin/python -m pip install --upgrade pip
           venv/bin/python -m pip install -r requirements.txt
 
-      - name: Build macOS Application with Platypus
+      - name: Install Platypus
         run: |
-          venv/bin/python -m pip install platypus-cli  # Ensure Platypus is installed
+          brew install platypus  # Install Platypus from Homebrew
+
+      - name: Build macOS Application
+        run: |
           platypus -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3 main.py" "build/SecurePasswordManager.app"
 
       - name: Package as DMG
@@ -67,4 +70,4 @@ jobs:
           name: "Secure Password Manager v1.0.${{ github.run_number }}"
           body: "Automated release of Secure Password Manager"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Required for authentication
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
