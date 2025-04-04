@@ -56,7 +56,7 @@ jobs:
 
       - name: Build macOS Application
         run: |
-          platypus -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3 main.py" "build/SecurePasswordManager.app"
+          platypus -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3" -B "main.py" "build/SecurePasswordManager.app"
 
       - name: Package as DMG
         run: |
