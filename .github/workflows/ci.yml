@@ -53,6 +53,9 @@ jobs:
         run: |
           brew install platypus  # Install Platypus GUI
           ln -s /Applications/Platypus.app/Contents/MacOS/Platypus /usr/local/bin/platypus  # Link CLI tool
+          
+      - name: Create Build Directory
+        run: mkdir -p build
 
       - name: Build macOS Application
         run: |
