@@ -49,27 +49,48 @@ jobs:
           venv/bin/python -m pip install --upgrade pip
           venv/bin/python -m pip install -r requirements.txt
 
-      - name: Install and Locate Platypus
+      - name: Install Platypus and Find CLI Tools
         run: |
           brew update
           brew install --cask platypus
-          # Install command-line tool
-          sudo /Applications/Platypus.app/Contents/Resources/Scripts/platypus_install_cli.sh
-          # Debug - locate the CLI tool
-          find /Applications/Platypus.app -name platypus* -type f
-          echo "PATH: $PATH"
-          # Verify installation
-          which platypus || echo "platypus command not found in PATH"
+          
+          # Find where the Platypus CLI tools are located
+          echo "Searching for Platypus CLI tools..."
+          find /Applications/Platypus.app -type f -name "platypus*" | sort
+          
+          # Create a local bin directory and add to PATH
+          mkdir -p $HOME/bin
+          echo "$HOME/bin" >> $GITHUB_PATH
+          
+          # Check which version of Platypus app we have
+          echo "Platypus app version:"
+          defaults read /Applications/Platypus.app/Contents/Info CFBundleShortVersionString || echo "Could not read version"
           
       - name: Create Build Directory
         run: mkdir -p build
         
+      - name: Set up Platypus CLI Manually
+        run: |
+          # Locate the Platypus executable within the app bundle
+          PLATYPUS_EXE=$(find /Applications/Platypus.app -name "Platypus" -type f -path "*/Contents/MacOS/*" | head -n 1)
+          echo "Found Platypus executable at: $PLATYPUS_EXE"
+          
+          # Create a wrapper script that calls the Platypus executable with the provided args
+          echo '#!/bin/bash' > $HOME/bin/platypus
+          echo "\"$PLATYPUS_EXE\" \"\$@\"" >> $HOME/bin/platypus
+          chmod +x $HOME/bin/platypus
+          
+          # Verify our script
+          echo "Script content:"
+          cat $HOME/bin/platypus
+          
+          echo "Checking if our script is executable:"
+          ls -la $HOME/bin/platypus
+          
       - name: Build macOS Application
         run: |
-          # Use the platypus CLI tool - should be in PATH after installation script
-          platypus -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3" -B "main.py" "build/SecurePasswordManager.app" || \
-          # Fallback to direct path if found by our search
-          $(find /Applications/Platypus.app -name "platypus" -type f | head -n 1) -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3" -B "main.py" "build/SecurePasswordManager.app"
+          # Use our wrapper script
+          $HOME/bin/platypus -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3" -B "main.py" "build/SecurePasswordManager.app"
 
       - name: Package as DMG
         run: |
