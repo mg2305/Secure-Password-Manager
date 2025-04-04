@@ -23,78 +23,35 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m venv venv
-          venv/bin/python -m pip install --upgrade pip
-          venv/bin/python -m pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller
 
-      - name: Run Tests manually
-        run: venv/bin/python tests.py  # Run tests without activating venv
+      - name: Run Tests
+        run: python tests.py
 
-  deploy:
-    needs: build
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install Dependencies
-        run: |
-          python -m venv venv
-          venv/bin/python -m pip install --upgrade pip
-          venv/bin/python -m pip install -r requirements.txt
-
-      - name: Install Platypus and Find CLI Tools
-        run: |
-          brew update
-          brew install --cask platypus
-          
-          # Find where the Platypus CLI tools are located
-          echo "Searching for Platypus CLI tools..."
-          find /Applications/Platypus.app -type f -name "platypus*" | sort
-          
-          # Create a local bin directory and add to PATH
-          mkdir -p $HOME/bin
-          echo "$HOME/bin" >> $GITHUB_PATH
-          
-          # Check which version of Platypus app we have
-          echo "Platypus app version:"
-          defaults read /Applications/Platypus.app/Contents/Info CFBundleShortVersionString || echo "Could not read version"
-          
-      - name: Create Build Directory
-        run: mkdir -p build
-        
-      - name: Set up Platypus CLI Manually
-        run: |
-          # Locate the Platypus executable within the app bundle
-          PLATYPUS_EXE=$(find /Applications/Platypus.app -name "Platypus" -type f -path "*/Contents/MacOS/*" | head -n 1)
-          echo "Found Platypus executable at: $PLATYPUS_EXE"
-          
-          # Create a wrapper script that calls the Platypus executable with the provided args
-          echo '#!/bin/bash' > $HOME/bin/platypus
-          echo "\"$PLATYPUS_EXE\" \"\$@\"" >> $HOME/bin/platypus
-          chmod +x $HOME/bin/platypus
-          
-          # Verify our script
-          echo "Script content:"
-          cat $HOME/bin/platypus
-          
-          echo "Checking if our script is executable:"
-          ls -la $HOME/bin/platypus
-          
       - name: Build macOS Application
         run: |
-          # Use our wrapper script
-          $HOME/bin/platypus -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3" -B "main.py" "build/SecurePasswordManager.app"
+          # Build standalone executable with PyInstaller
+          pyinstaller --onefile --windowed --icon=icon.icns --name "Secure Password Manager" main.py
+          
+          # Create app directory structure if needed
+          mkdir -p "dist/Secure Password Manager.app/Contents/MacOS"
+          mkdir -p "dist/Secure Password Manager.app/Contents/Resources"
+          
+          # Copy executable to app bundle if not already there
+          if [ ! -f "dist/Secure Password Manager.app/Contents/MacOS/Secure Password Manager" ]; then
+            cp "dist/Secure Password Manager" "dist/Secure Password Manager.app/Contents/MacOS/"
+          fi
+          
+          # Copy icon if it exists
+          if [ -f "icon.icns" ]; then
+            cp "icon.icns" "dist/Secure Password Manager.app/Contents/Resources/"
+          fi
 
       - name: Package as DMG
         run: |
-          hdiutil create -volname "Secure Password Manager" -srcfolder "build/SecurePasswordManager.app" -ov -format UDZO "SecurePasswordManager.dmg"
+          hdiutil create -volname "Secure Password Manager" -srcfolder "dist/Secure Password Manager.app" -ov -format UDZO "SecurePasswordManager.dmg"
 
       - name: Upload DMG to GitHub Releases
         uses: softprops/action-gh-release@v2
