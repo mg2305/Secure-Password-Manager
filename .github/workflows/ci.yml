@@ -49,17 +49,25 @@ jobs:
           venv/bin/python -m pip install --upgrade pip
           venv/bin/python -m pip install -r requirements.txt
 
-      - name: Install Platypus CLI
+      - name: Install Platypus
         run: |
-          brew install platypus  # Install Platypus GUI
-          ln -s /Applications/Platypus.app/Contents/MacOS/Platypus /usr/local/bin/platypus  # Link CLI tool
+          brew install --cask platypus
+          # Ensure platypus is available in PATH
+          echo "$(brew --prefix)/bin" >> $GITHUB_PATH
           
       - name: Create Build Directory
         run: mkdir -p build
+        
+      - name: Verify Platypus Installation
+        run: |
+          which platypus
+          platypus --version
 
       - name: Build macOS Application
         run: |
-          platypus -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3" -B "main.py" "build/SecurePasswordManager.app"
+          # Use full path to Platypus binary if needed
+          PLATYPUS_PATH=$(find /Applications -name "Platypus" -type f -path "*/Contents/MacOS/*" | head -n 1)
+          $PLATYPUS_PATH -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3" -B "main.py" "build/SecurePasswordManager.app"
 
       - name: Package as DMG
         run: |
@@ -67,6 +75,7 @@ jobs:
 
       - name: Upload DMG to GitHub Releases
         uses: softprops/action-gh-release@v2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
           files: SecurePasswordManager.dmg
           token: ${{ secrets.GITHUB_TOKEN }}
