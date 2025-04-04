@@ -23,35 +23,106 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-          python -m pip install pyinstaller
+          python -m venv venv
+          venv/bin/python -m pip install --upgrade pip
+          venv/bin/python -m pip install -r requirements.txt
 
-      - name: Run Tests
-        run: python tests.py
+      - name: Run Tests manually
+        run: venv/bin/python tests.py  # Run tests without activating venv
 
-      - name: Build macOS Application
+  deploy:
+    needs: build
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
         run: |
-          # Build standalone executable with PyInstaller
-          pyinstaller --onefile --windowed --icon=icon.icns --name "Secure Password Manager" main.py
+          python -m venv venv
+          venv/bin/python -m pip install --upgrade pip
+          venv/bin/python -m pip install -r requirements.txt
+
+      - name: Debug Environment
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Contents of current directory: $(ls -la)"
+          echo "Python version: $(python --version)"
+          echo "OS version: $(sw_vers)"
+
+      - name: Install Platypus with Debug
+        run: |
+          # Install Platypus with verbose output
+          brew install --verbose --cask platypus
           
-          # Create app directory structure if needed
-          mkdir -p "dist/Secure Password Manager.app/Contents/MacOS"
-          mkdir -p "dist/Secure Password Manager.app/Contents/Resources"
+          # Check Platypus app location
+          echo "Platypus.app location:"
+          ls -la /Applications/Platypus.app || echo "Platypus.app not found in /Applications"
           
-          # Copy executable to app bundle if not already there
-          if [ ! -f "dist/Secure Password Manager.app/Contents/MacOS/Secure Password Manager" ]; then
-            cp "dist/Secure Password Manager" "dist/Secure Password Manager.app/Contents/MacOS/"
-          fi
+          # Check Contents directory
+          echo "Contents directory:"
+          ls -la /Applications/Platypus.app/Contents || echo "Contents directory not found"
           
-          # Copy icon if it exists
-          if [ -f "icon.icns" ]; then
-            cp "icon.icns" "dist/Secure Password Manager.app/Contents/Resources/"
-          fi
+          # Check MacOS directory
+          echo "MacOS directory:"
+          ls -la /Applications/Platypus.app/Contents/MacOS || echo "MacOS directory not found"
+          
+          # Find any platypus executables
+          echo "Finding platypus executables:"
+          find /Applications -name "platypus*" -type f | xargs ls -la
+
+      - name: Create Build Directory
+        run: mkdir -p build
+
+      - name: Fix Platypus Permissions
+        run: |
+          # Make sure Platypus executable is actually executable
+          chmod +x /Applications/Platypus.app/Contents/MacOS/Platypus
+          
+          # Test if Platypus runs
+          /Applications/Platypus.app/Contents/MacOS/Platypus --help || echo "Platypus command failed"
+
+      - name: Build macOS Application with Command Line Arguments
+        run: |
+          # Run with explicit arguments - using Command Line mode
+          /Applications/Platypus.app/Contents/MacOS/Platypus \
+            --app-name "Secure Password Manager" \
+            --output-type "None" \
+            --icon "icon.icns" \
+            --interpreter "python3" \
+            --bundled-file "main.py" \
+            --app-version "1.0" \
+            --author "Developer" \
+            --bundle-identifier "com.developer.securepasswordmanager" \
+            --destination "build" \
+            "build/SecurePasswordManager.app"
+
+      - name: Build macOS Application (Alternative Method)
+        if: failure()
+        run: |
+          # If the above fails, try with full path flags
+          /Applications/Platypus.app/Contents/MacOS/Platypus \
+            -a "Secure Password Manager" \
+            -o "None" \
+            -i "icon.icns" \
+            -f "python3" \
+            -B "main.py" \
+            -V "1.0" \
+            -u "Developer" \
+            -I "com.developer.securepasswordmanager" \
+            -d "build" \
+            "build/SecurePasswordManager.app"
 
       - name: Package as DMG
         run: |
-          hdiutil create -volname "Secure Password Manager" -srcfolder "dist/Secure Password Manager.app" -ov -format UDZO "SecurePasswordManager.dmg"
+          ls -la build
+          hdiutil create -volname "Secure Password Manager" -srcfolder "build/SecurePasswordManager.app" -ov -format UDZO "SecurePasswordManager.dmg"
 
       - name: Upload DMG to GitHub Releases
         uses: softprops/action-gh-release@v2
