@@ -51,23 +51,18 @@ jobs:
 
       - name: Install Platypus
         run: |
+          brew update
           brew install --cask platypus
-          # Ensure platypus is available in PATH
-          echo "$(brew --prefix)/bin" >> $GITHUB_PATH
+          # Debug information
+          ls -la /Applications/Platypus.app/Contents/Resources/
           
       - name: Create Build Directory
         run: mkdir -p build
         
-      - name: Verify Platypus Installation
-        run: |
-          which platypus
-          platypus --version
-
       - name: Build macOS Application
         run: |
-          # Use full path to Platypus binary if needed
-          PLATYPUS_PATH=$(find /Applications -name "Platypus" -type f -path "*/Contents/MacOS/*" | head -n 1)
-          $PLATYPUS_PATH -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3" -B "main.py" "build/SecurePasswordManager.app"
+          # Use direct path to the Platypus command-line tool
+          /Applications/Platypus.app/Contents/Resources/platypus_clt -P -y -a "Secure Password Manager" -o "None" -i "icon.icns" -f "python3" -B "main.py" "build/SecurePasswordManager.app"
 
       - name: Package as DMG
         run: |
