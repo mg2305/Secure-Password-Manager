@@ -49,9 +49,10 @@ jobs:
           venv/bin/python -m pip install --upgrade pip
           venv/bin/python -m pip install -r requirements.txt
 
-      - name: Install Platypus
+      - name: Install Platypus CLI
         run: |
-          brew install platypus  # Install Platypus from Homebrew
+          brew install platypus  # Install Platypus GUI
+          ln -s /Applications/Platypus.app/Contents/MacOS/Platypus /usr/local/bin/platypus  # Link CLI tool
 
       - name: Build macOS Application
         run: |
