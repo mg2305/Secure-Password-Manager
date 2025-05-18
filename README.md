@@ -52,11 +52,6 @@ A lightweight, secure, and user-friendly password manager built with Python. Thi
 
 ---
 
-## 📸 Screenshots
-
-> _Coming soon: A preview of the UI and key features in action._
-
----
 
 
 
