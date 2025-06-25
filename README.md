@@ -6,25 +6,25 @@ A lightweight, secure, and user-friendly password manager built with Python. Thi
 
 ## Features
 
-- ** Two-Fold Security**
+- **Two-Fold Security**
   - Decryption requires both **Master Password** and locally stored **Keyfile**, reducing exposure to offline attacks.
 
-- ** User-Friendly Interface**
+- **User-Friendly Interface**
   - Built using **Tkinter** for a simple, responsive, and secure desktop experience.
 
-- ** AES Encryption**
+- **AES Encryption**
   - All stored passwords are encrypted using the **Cryptography** library with AES standards.
 
-- ** Random Password Generator**
+- **Random Password Generator**
   - Generate strong, random passwords for websites automatically.
 
-- ** Clipboard Management**
+- **Clipboard Management**
   - Retrieved passwords are copied to the clipboard and automatically cleared after a short delay.
 
-- ** Auto Logout on Inactivity**
+- **Auto Logout on Inactivity**
   - Users are logged out automatically after a period of inactivity in the vault window.
 
-- ** Login Lockout**
+- **Login Lockout**
   - After 5 failed login attempts, the app locks for 5 minutes to prevent brute-force attacks.
 
 ---
