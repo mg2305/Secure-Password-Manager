@@ -27,19 +27,19 @@ TOKEN = "MAYANK'S SPM"
 keyfile_path = os.path.expanduser("~/.secure_pm/keyfile.key")
 
 
-# === X Button Override Function ===
+# X Button Override Function 
 def on_closing(window):
     """Ensure clean exit on window close (overrides default behavior)."""
     exit()
 
 
-# === Check if Vault Exists ===
+# Check if Vault Exists 
 def vault_exists():
     """Checks if the vault metadata indicates an existing vault."""
     return get_VAULT_EXISTS()
 
 
-# === Sign Up Function ===
+# Sign Up Function 
 def sign_up():
     """Handles the sign-up process by creating a master password, generating a keyfile, 
     and storing encrypted metadata."""
@@ -82,7 +82,7 @@ def sign_up():
         messagebox.showinfo("Sign Up Success", "You have successfully signed up!")
 
 
-# === Login Function ===
+# Login Function
 def login():
     """Handles user login with master password verification, keyfile authentication, 
     and access control for too many failed attempts."""
@@ -131,7 +131,7 @@ def login():
     del key
 
 
-# === Delete Old Vault Function ===
+# Delete Old Vault Function
 def delete_old():
     """Deletes the entire vault, keyfile, and resets metadata."""
     if messagebox.askyesno("Delete Vault", "Are you sure you want to delete the vault?"):
@@ -145,22 +145,19 @@ def delete_old():
         messagebox.showinfo("Delete Success", "Vault successfully deleted.")
 
 
-# === Exit Function ===
+# Exit Function
 def exit():
     """Handles clean exit with clipboard clearing and window destruction."""
     if messagebox.askyesno("Exit", "Are you sure you want to exit? Unsaved data will be lost!"):
         clear_clipboard()  # Ensure clipboard is wiped
         window.destroy()  # Properly destroy window
 
-
-# ========================= Program Execution Starts Here ========================= #
-
 # Create tables in the database if not already present
 create_tables()
 #Ensure correct database path based on execution type (script or bundled app)
 get_db_path()
 
-# === Start the GUI Window Setup ===
+# Start the GUI Window Setup
 window = tk.Tk()
 window.title("Secure Password Manager")
 window.geometry("400x300")
@@ -172,7 +169,7 @@ center_window(window)
 window.protocol("WM_DELETE_WINDOW", lambda: on_closing(window))
 add_logo(window, "#00BFFF")
 
-# === Create Main Menu Buttons ===
+# Create Main Menu Buttons
 frame = tk.Frame(window, bg="#00BFFF")
 frame.place(relx=0.5, rely=0.5, anchor="center")
 Button(frame, text="Sign Up", command=sign_up, width=150, fg="#001F3F", font=("Tahoma", 12, "bold")).pack(pady=7)
