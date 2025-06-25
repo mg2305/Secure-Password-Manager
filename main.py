@@ -41,8 +41,6 @@ def vault_exists():
 
 # Sign Up Function 
 def sign_up():
-    """Handles the sign-up process by creating a master password, generating a keyfile, 
-    and storing encrypted metadata."""
     if vault_exists():
         messagebox.showerror("Sign Up Failed", "Cannot Sign up. Vault already exists.")
     else:
@@ -84,8 +82,6 @@ def sign_up():
 
 # Login Function
 def login():
-    """Handles user login with master password verification, keyfile authentication, 
-    and access control for too many failed attempts."""
     if not vault_exists():
         messagebox.showerror("Login Failed", "Cannot login. Vault does not exist. Please do the Sign Up first.")
         return
@@ -133,7 +129,6 @@ def login():
 
 # Delete Old Vault Function
 def delete_old():
-    """Deletes the entire vault, keyfile, and resets metadata."""
     if messagebox.askyesno("Delete Vault", "Are you sure you want to delete the vault?"):
         if not vault_exists():
             messagebox.showerror("Delete Failed", "Vault does not exist, hence cannot be deleted.")
@@ -147,7 +142,6 @@ def delete_old():
 
 # Exit Function
 def exit():
-    """Handles clean exit with clipboard clearing and window destruction."""
     if messagebox.askyesno("Exit", "Are you sure you want to exit? Unsaved data will be lost!"):
         clear_clipboard()  # Ensure clipboard is wiped
         window.destroy()  # Properly destroy window
