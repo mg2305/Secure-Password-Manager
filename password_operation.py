@@ -11,16 +11,15 @@ import threading
 import sys
 import select
 
-# === X Button Override Function ===
+# X Button Override Function 
 # Ensures the vault properly logs out when the window is closed
 def on_closing(vault_window):
     handle_vault_action(5)
-
-#=============== AutoLogout System ===============#
-INACTIVITY_TIMEOUT = 300  # Time (in seconds) before auto-logout triggers
-last_activity_time = time.time()  # Track last activity time
-logout_active = False  # Controls if auto-logout thread runs
-force_logout = False  # Tracks if logout was forced due to inactivity
+    
+INACTIVITY_TIMEOUT = 300  
+last_activity_time = time.time()  
+logout_active = False  
+force_logout = False 
 
 # Resets the inactivity timer on user interaction
 def reset_timer(event=None):
@@ -38,9 +37,7 @@ def auto_logout():
         time.sleep(1)  # Sleep for a second before checking again
     handle_vault_action(5)  # Trigger logout
 
-# Creates the vault window after successful login
-# Initializes auto-logout and binds event listeners for user interaction
-
+# Create the vault window after successful login
 def create_vault_window(key, window):
     global logout_active, force_logout, last_activity_time
 
@@ -55,8 +52,8 @@ def create_vault_window(key, window):
     vault_window.geometry("500x400")
     vault_window.configure(bg="#1E90FF") 
 
-    center_window(vault_window)  # Centers the window on the screen
-    add_logo(vault_window, "#1E90FF")  # Adds a logo if implemented in utils
+    center_window(vault_window)  
+    add_logo(vault_window, "#1E90FF")  
 
     # Start auto-logout timer
     if not hasattr(window, 'auto_logout_thread'):
@@ -69,8 +66,6 @@ def create_vault_window(key, window):
 
     # Handle X button closure
     vault_window.protocol("WM_DELETE_WINDOW", lambda: on_closing(vault_window))
-    
-    # =============== Vault Functionalities =============== #
 
     # Save a new password
     def save_new_password():
@@ -156,7 +151,7 @@ def create_vault_window(key, window):
         else:
             messagebox.showerror("Invalid Choice", "Please select a valid option.")
 
-    # =============== Buttons Setup =============== #
+    # Buttons Setup
     frame = tk.Frame(vault_window, bg="#1E90FF")
     frame.place(relx=0.5, rely=0.5, anchor="center")
     Button(frame, text="Save New Password", command=lambda: handle_vault_action(1), width=180, fg="#001F3F", font=("Tahoma", 12, "bold")).pack(pady=7)
