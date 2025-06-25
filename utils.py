@@ -9,25 +9,16 @@ import sys
 
 # Function to display password and copy it to clipboard
 def display_password(password, website):
-    """
-    Displays the retrieved password (masked) in a message box 
-    and copies the actual password to the clipboard.
-    """
     masked_password = '*' * len(password)  
     pyperclip.copy(password)  
     messagebox.showinfo("Retrieved Password", f"Password for {website}: {masked_password}\nPassword copied to clipboard!")
 
 # Function to clear clipboard content
 def clear_clipboard():
-    """Clears any content from the clipboard to prevent password leakage."""
     pyperclip.copy("")
 
 # Function to center the window on the screen
 def center_window(window, width=400, height=300):
-    """
-    Centers the window on the screen based on given width and height.
-    Default size is 400x300.
-    """
     screen_width = window.winfo_screenwidth()  
     screen_height = window.winfo_screenheight()  
     x = (screen_width - width) // 2 
@@ -36,10 +27,6 @@ def center_window(window, width=400, height=300):
 
 # Function to add a logo image to the window 
 def add_logo(window, _bg):
-    """
-    Loads and displays a logo image in the top-right corner of the window.
-    Supports both normal and bundled (PyInstaller) app runs.
-    """
     # Check if running as a bundled app (e.g., using PyInstaller)
     if getattr(sys, 'frozen', False):
         # When bundled, look for the logo in the "Resources" folder created by PyInstaller
