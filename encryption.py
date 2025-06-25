@@ -9,8 +9,6 @@ import string
 
 ph = PasswordHasher()
 
-# --------- Master Password Handling ---------
-
 # Hashes the master password securely using Argon2
 def hash_mp(masterPassword):
     return ph.hash(masterPassword)
@@ -22,9 +20,6 @@ def verify_mp(masterPassword):
         return True
     except:
         return False
-
-
-# --------- Keyfile Management ---------
 
 # Generates a random key file (default size: 32 bytes) and saves it to the given path
 def gen_keyfile(keyfile_path, key_size=32):
@@ -48,19 +43,16 @@ def delete_keyfile(keyfile_path):
     except:
         return False
 
-
-# --------- Token Encryption/Decryption ---------
-
 # Encrypts a token using the keyfile data
 def encrypt_token(TOKEN, keyfile_path):
     with open(keyfile_path, "rb") as keyfile:
         key = keyfile.read()
 
     if len(key) != 32:
-        return None  # Ensure the key length is correct
+        return None  
 
     fernet_key = Fernet(base64.urlsafe_b64encode(key))
-    encrypted_token = fernet_key.encrypt(TOKEN.encode())  # Encrypt token with key
+    encrypted_token = fernet_key.encrypt(TOKEN.encode())  
     return encrypted_token
 
 # Decrypts the encrypted token using the keyfile data
@@ -69,11 +61,8 @@ def decrypt_token(keyfile_path, encrypted_token):
         key = keyfile.read()
 
     fernet_key = Fernet(base64.urlsafe_b64encode(key))
-    decrypted_token = fernet_key.decrypt(encrypted_token)  # Decrypt token with key
+    decrypted_token = fernet_key.decrypt(encrypted_token)  
     return decrypted_token.decode()
-
-
-# --------- Keyfile Verification ---------
 
 # Verifies if the keyfile is correct by decrypting and comparing the token
 def verify_keyfile(keyfile_path, TOKEN):
@@ -82,43 +71,34 @@ def verify_keyfile(keyfile_path, TOKEN):
     except:
         return False
 
-
-# --------- Key Derivation ---------
-
 # Derives a 32-byte encryption key using the master password and keyfile (Argon2 raw hashing)
 def derive_key(masterPassword, keyfile_path):
     try:
         with open(keyfile_path, "rb") as keyfile:
             keyfile_data = keyfile.read()
 
-        combined_data = masterPassword.encode() + keyfile_data  # Combine password and keyfile data
+        combined_data = masterPassword.encode() + keyfile_data  
 
-        salt = b"securePasswordManager"  # Fixed salt for consistency (could be made more dynamic)
+        salt = b"securePasswordManager"  
 
         derived_key = low_level.hash_secret_raw(
             secret=combined_data,
             salt=salt,
-            time_cost=3,  # Argon2 time cost (iterations)
-            memory_cost=65536,  # Memory cost (in KB)
-            parallelism=1,  # Single-threaded processing
-            hash_len=32,  # Length of derived key
-            type=low_level.Type.ID  # Argon2id type (balanced between security and performance)
+            time_cost=3,  
+            memory_cost=65536,  
+            parallelism=1,  
+            hash_len=32,  
+            type=low_level.Type.ID  
         )
 
         return derived_key
     except:
         return None
 
-
-# --------- Password Generation ---------
-
 # Generates a random password with uppercase, lowercase, digits, and special characters
 def get_random_password(length=20):
     characters = string.ascii_letters + string.digits + string.punctuation
     return ''.join(secrets.choice(characters) for _ in range(length))
-
-
-# --------- Password Encryption/Decryption ---------
 
 # Encrypts a website password using the derived key
 def encrypt_password(password, key):
