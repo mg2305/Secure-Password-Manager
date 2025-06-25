@@ -3,7 +3,6 @@ import sqlite3
 import time
 import sys
 
-# Define global database name
 global DB_NAME 
 DB_NAME = 'gui_spm.db'
 
@@ -17,9 +16,6 @@ def get_db_path():
     else:
         # Running as a regular script
         DB_NAME = "gui_spm.db"
-
-
-# === Vault Metadata Operations ===
 
 # Check if the vault already exists
 def get_VAULT_EXISTS():
@@ -57,9 +53,6 @@ def fill_VAULT_METADATA(vault_exists, mp_hash, enc_token):
                    (vault_exists, mp_hash, enc_token))
     conn.commit()
     conn.close()
-
-
-# === Table Creation and Deletion Operations ===
 
 # Create the PASSWORDS, VAULT_METADATA, and T_LAST_FAILED tables if they don't exist
 def create_tables():
@@ -115,9 +108,6 @@ def delete_tables():
 
     conn.commit()
     conn.close()
-
-
-# === Password Management Operations ===
 
 # Check if a password for a specific website already exists
 def websitePassword_exists(website):
@@ -176,9 +166,6 @@ def get_all_websites():
     result = cursor.fetchall()
     conn.close()
     return [row[0] for row in result]
-
-
-# === Failed Login Tracking Operations ===
 
 # Get the last failed login time
 def get_LAST_FAILED():
