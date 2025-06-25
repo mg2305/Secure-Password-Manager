@@ -6,7 +6,7 @@ import sys
 global DB_NAME 
 DB_NAME = 'gui_spm.db'
 
-# === Ensure correct database path based on execution type (script or bundled app) ===
+# Ensure correct database path based on execution type (script or bundled app)
 def get_db_path():
     if getattr(sys, 'frozen', False):
         global DB_NAME
