@@ -7,9 +7,7 @@ A lightweight, secure, and user-friendly password manager built with Python. Thi
 ## 🚀 Features
 
 - **🔑 Two-Fold Security**
-  - During **Sign Up**, a random Keyfile is generated and stored locally.
-  - During **Login**, both the **Master Password** and the **Keyfile** are validated.
-  - The encryption key is derived using both inputs — making decryption impossible without the Keyfile.
+  - Decryption requires both **Master Password** and locally stored **Keyfile**, reducing exposure to offline attacks.
 
 - **🖥️ User-Friendly Interface**
   - Built using **Tkinter** for a simple, responsive, and secure desktop experience.
