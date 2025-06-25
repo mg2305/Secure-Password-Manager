@@ -7,22 +7,22 @@ import pyperclip
 import termios
 import sys
 
-# === Function to display password and copy it to clipboard ===
+# Function to display password and copy it to clipboard
 def display_password(password, website):
     """
     Displays the retrieved password (masked) in a message box 
     and copies the actual password to the clipboard.
     """
-    masked_password = '*' * len(password)  # Mask the password for display
-    pyperclip.copy(password)  # Copy the real password to the clipboard
+    masked_password = '*' * len(password)  
+    pyperclip.copy(password)  
     messagebox.showinfo("Retrieved Password", f"Password for {website}: {masked_password}\nPassword copied to clipboard!")
 
-# === Function to clear clipboard content ===
+# Function to clear clipboard content
 def clear_clipboard():
     """Clears any content from the clipboard to prevent password leakage."""
     pyperclip.copy("")
 
-# === Function to center the window on the screen ===
+# Function to center the window on the screen
 def center_window(window, width=400, height=300):
     """
     Centers the window on the screen based on given width and height.
@@ -30,11 +30,11 @@ def center_window(window, width=400, height=300):
     """
     screen_width = window.winfo_screenwidth()  
     screen_height = window.winfo_screenheight()  
-    x = (screen_width - width) // 2  # Calculate x position
-    y = (screen_height - height) // 2  # Calculate y position
-    window.geometry(f"{width}x{height}+{x}+{y}")  # Set window position
+    x = (screen_width - width) // 2 
+    y = (screen_height - height) // 2  
+    window.geometry(f"{width}x{height}+{x}+{y}")  
 
-# === Function to add a logo image to the window ===
+# Function to add a logo image to the window 
 def add_logo(window, _bg):
     """
     Loads and displays a logo image in the top-right corner of the window.
@@ -50,7 +50,7 @@ def add_logo(window, _bg):
     
     # Load and resize the logo image
     logo_img = Image.open(logo_path)
-    logo_resized = logo_img.resize((125, 125))  # Resize logo to 125x125 pixels
+    logo_resized = logo_img.resize((125, 125))  
     logo_tk = ImageTk.PhotoImage(logo_resized)
 
     # Create a label to display the logo, positioned in the top-right corner
