@@ -45,9 +45,6 @@ A lightweight, secure, and user-friendly password manager built with Python. Thi
 ### Database:
 - **SQLite** – Local encrypted storage of password entries
 
-### Packaging:
-- **Platypus (macOS)** – Converts Python script into a standalone macOS app
-
 ---
 
 
